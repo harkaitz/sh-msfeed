@@ -64,7 +64,9 @@ msfeed_rss_check_programs() {
 }
 ## -----------------------------------------------------------------------------
 msfeed_rss_dump() {
-    msfeed_rss_xmls "$@" | sfeed
+    msfeed_rss_xmls "$@" | sfeed | awk -F '	' -v OFS='	' '{
+        print $1, "[" $9 "]" $2,$3,$4,$5,$3,$7,$8,$9
+    }'
 }
 msfeed_rss_cats() {
     if test -f "${MSFEED_RSS_FILE}";then
