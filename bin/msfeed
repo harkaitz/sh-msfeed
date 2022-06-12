@@ -23,36 +23,47 @@
 #L:  LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
 #L:  OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 #L:  WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+##:
 #h: Usage: $0 ...
 #h:
+#h: ... show               : Show configuration.
 #h: ... [today]            : View latest news.
 #h: ... save NAME CATEGORY : Save news in category.
+#h: ... escape [FILE...]   : Escape content for sfeed.
+##:
 msfeed() {
     local cmd="$1"
     shift
     case "${cmd}" in
-        show)  msfeed_show_variables ;;
-        today) msfeed_today "$@"     ;;
-        save)  msfeed_save  "$@"     ;;
-        *)     msfeed_error "Invalid subcommand: ${cmd}.";;
+        show)   msfeed_show_variables ;;
+        today)  msfeed_today  "$@"    ;;
+        save)   msfeed_save   "$@"    ;;
+        escape) msfeed_escape "$@"    ;;
+        *)      msfeed_error "Invalid subcommand: ${cmd}."
+                return 1;;
     esac
 }
 msfeed_show_variables() {
-    printf '%-20s : %s\n' MSFEED_DIR   "${MSFEED_DIR}"
-    printf '%-20s : %s\n' MSFEED_TODAY "${MSFEED_TODAY}"
+    printf '%-20s : %s\n'                    \
+           MSFEED_DIR    "${MSFEED_DIR}"     \
+           MSFEED_TODAY  "${MSFEED_TODAY}"   \
+           MSFEED_ALWAYS "${MSFEED_ALWAYS}"  \
+           MSFEED_LOGDIR "${MSFEED_LOGDIR}"
 }
 msfeed_calc_variables() {
     MSFEED_DIR="${MSFEED_DIR:-${HOME}/.msfeed}"
     MSFEED_TODAY="${MSFEED_TODAY:-${MSFEED_DIR}/`date '+%Y-%m-%d'`}"
+    MSFEED_ALWAYS="${MSFEED_ALWAYS:-${MSFEED_DIR}/always}"
+    MSFEED_LOGDIR="${MSFEED_LOGDIR:-${MSFEED_DIR}/logs}"
 }
 ## -----------------------------------------------------------------------------
 msfeed_save() {
     local name="$1" category="`printf '%s\n' "${2}" | tr '/' '-'`"
-    if test ! -n "${name}";then
+    if test ! -n "${name}"; then
         msfeed_error "Please specify a name."
         return 1
     fi
-    if test ! -n "${category}";then
+    if test ! -n "${category}"; then
         msfeed_error "Please specify a category."
         return 1
     fi
@@ -60,12 +71,19 @@ msfeed_save() {
     mkdir -p "${MSFEED_TODAY}"
     sort -rn > "${MSFEED_TODAY}/${name}-${category}"
 }
+msfeed_escape() {
+    sed '
+    s|\t|\\t|g
+    s|\\|\\\\|g
+    s|$|\\|g
+    ' "$@" | tr '\n' 'n'
+}
 msfeed_today() {
     if test -d "${MSFEED_TODAY}";then
-        sfeed_curses `find "${MSFEED_TODAY}" -type f`
+       mkdir -p "${MSFEED_TODAY}" "${MSFEED_ALWAYS}" 
+       sfeed_curses `find "${MSFEED_TODAY}" "${MSFEED_ALWAYS}" -type f`
     fi
 }
-
 ## -----------------------------------------------------------------------------
 msfeed_info()  { echo "${SCRNAME}: $*" >&2; }
 msfeed_error() { msfeed_info "error: $*";   }
