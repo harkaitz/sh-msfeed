@@ -17,8 +17,17 @@ msfeed
 
     Usage: msfeed ...
     
+    ... show               : Show configuration.
     ... [today]            : View latest news.
     ... save NAME CATEGORY : Save news in category.
+    ... escape [FILE...]   : Escape content for sfeed.
+
+msfeed_log
+
+    Usage: msfeed_log NAME... < LOG
+    
+    Save a log file for `msfeed(1)`. If a log contains an ALERT then a
+    tag is added to the title.
 
 msfeed_rss
 

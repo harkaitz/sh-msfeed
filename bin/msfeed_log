@@ -24,7 +24,7 @@
 #L:  OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 #L:  WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 ##:
-#h: Usage: $0 NAME < LOG
+#h: Usage: $0 NAME... < LOG
 #h:
 #h: Save a log file for `msfeed(1)`. If a log contains an ALERT then a
 #h: tag is added to the title.
@@ -32,7 +32,7 @@
 . msfeed_rss
 msfeed_log() {
     ## Variables.
-    local name="$1"
+    local name="$*"
     local date="`date +%s`"
     local logfile="${MSFEED_LOGDIR}/`echo "${name}" | tr ' ' '-'`.${date}.log"
     ## Get log file.

@@ -79,10 +79,8 @@ msfeed_escape() {
     ' "$@" | tr '\n' 'n'
 }
 msfeed_today() {
-    if test -d "${MSFEED_TODAY}";then
-       mkdir -p "${MSFEED_TODAY}" "${MSFEED_ALWAYS}" 
-       sfeed_curses `find "${MSFEED_TODAY}" "${MSFEED_ALWAYS}" -type f`
-    fi
+    mkdir -p "${MSFEED_TODAY}" "${MSFEED_ALWAYS}" 
+    sfeed_curses `find "${MSFEED_TODAY}" "${MSFEED_ALWAYS}" -type f`
 }
 ## -----------------------------------------------------------------------------
 msfeed_info()  { echo "${SCRNAME}: $*" >&2; }
