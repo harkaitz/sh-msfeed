@@ -94,7 +94,10 @@ msfeed_rss_xmls() {
                 local m="`echo "${c}" | shuf --random-source=/dev/stdin -n 1 -e ${TWITTER_NITTERS}`"
                 local u="https://${m}/${c}/rss"
                 ;;
-            
+            stack://*)
+                local c="`printf '%s\n' "${u}" | sed 's|^stack://||' | tr ',' '+'`"
+                local u="https://stackoverflow.com/feeds/tag?tagnames=${c}&sort=newest"
+                ;;
         esac
         msfeed_info "Downloading ${u} ..."
         curl "${u}"                            \
